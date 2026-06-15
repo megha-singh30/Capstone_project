@@ -19,21 +19,18 @@ logging.basicConfig(level=logging.INFO,
 
 list_of_files = [
     ".github/workflows/.gitkeep", # this is used to keep the files for CI/CD pipelines (deployment)
+    f"data/"
+    f"tests/"
     f"src/{project_name}/__init__.py",
-    f"src/{project_name}/components/__init__.py",
-    f"src/{project_name}/utils/__init__.py",
-    f"src/{project_name}/config/__init__.py",
-    f"src/{project_name}/config/configuration.py",
-    f"src/{project_name}/pipeline/__init__.py",
-    f"src/{project_name}/entity/__init__.py",
-    f"src/{project_name}/constants/__init__.py",
+    f"src/{project_name}/data.py",
+    f"src/{project_name}/predict.py",
+    f"src/{project_name}/train.py",
+    f"src/{project_name}/data_ingestion.py",
     "config/config.yaml",
-    "dvc.yaml", # for model deployment, to track pipelines and data versioning
-    "params.yaml",
-    "requirements.txt", # keeping the list of all packages to be used by setup.py
-    "setup.py",
+    "requirements.txt", # keeping the list of all packages
     "research/churn_analysis.ipynb", # for experiments done with the data before production release 
     "templates/index.html" # for creating the web application
+    "pyproject.toml" # for packaging the project
 ]
 
 #3 3. Convert the list into actual path to create folders ############################
