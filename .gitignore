@@ -217,4 +217,9 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-.venv/
+.capsproj/
+*.joblib
+models/
+
+mlops-tracker.xlsx
+mlops-tracker-notion.csv

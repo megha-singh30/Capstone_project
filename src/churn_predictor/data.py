@@ -27,7 +27,9 @@ def load_raw(csv_path: str) -> pd.DataFrame:
       - return the DataFrame unchanged (do NO cleaning here — keep load and
         clean separate so you can inspect the raw mess if a bug shows up)
     """
-    raise NotImplementedError
+
+    df = pd.read_csv(csv_path)
+    return df
 
 
 def clean(df: pd.DataFrame) -> pd.DataFrame:
@@ -52,7 +54,11 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     Work on a copy (df = df.copy()) so you never mutate the caller's frame.
     Return the cleaned DataFrame (target column still included).
     """
-    raise NotImplementedError
+    df = df.copy()
+    df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce").fillna(0)
+    df = df.drop(columns=[ID_COL])
+
+    return df
 
 
 def split_features_target(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
@@ -63,7 +69,10 @@ def split_features_target(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
       - X = df without TARGET_COL
       - return (X, y)
     """
-    raise NotImplementedError
+    y = df[TARGET_COL].map({"Yes": 1, "No": 0})
+    X = df.drop(columns=[TARGET_COL]) 
+    return X, y 
+
 
 
 def get_feature_columns(X: pd.DataFrame) -> tuple[list[str], list[str]]:
@@ -80,4 +89,6 @@ def get_feature_columns(X: pd.DataFrame) -> tuple[list[str], list[str]]:
 
     Hint: X.select_dtypes(include="number").columns and include="object".
     """
-    raise NotImplementedError
+    numeric_cols = X.select_dtypes(include="number").columns.tolist()
+    categorical_cols = X.select_dtypes(exclude="number").columns.tolist()
+    return categorical_cols, numeric_cols
