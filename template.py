@@ -29,7 +29,7 @@ list_of_files = [
     "config/config.yaml",
     "requirements.txt", # keeping the list of all packages
     "research/churn_analysis.ipynb", # for experiments done with the data before production release 
-    "templates/index.html" # for creating the web application
+    "templates/index.html", # for creating the web application
     "pyproject.toml" # for packaging the project
 ]
 

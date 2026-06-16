@@ -1,0 +1,20 @@
+[project]
+name = "churn-prediction-service"
+version = "0.1.0"
+description = "Production-grade churn prediction service (MLOps capstone)"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0",
+    "scikit-learn>=1.3",
+    "joblib>=1.3",
+    # will add as per stage: fastapi, uvicorn, mlflow, xgboost, boto3, ...
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "ruff>=0.1"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
