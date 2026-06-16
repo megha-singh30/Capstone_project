@@ -1,7 +1,8 @@
 [project]
-name = "churn-prediction-service"
+name = "churn_predictor"
 version = "0.1.0"
 description = "Production-grade churn prediction service (MLOps capstone)"
+
 requires-python = ">=3.10"
 dependencies = [
     "pandas>=2.0",
@@ -18,3 +19,6 @@ line-length = 100
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
