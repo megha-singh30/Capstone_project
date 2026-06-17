@@ -74,7 +74,7 @@ def train(csv_path: str) -> tuple[Pipeline, float]:
       9. return pipe, auc
     """
     df = data.load_raw(csv_path)
-    df = data.clean(df)
+    df = data.preprocess(df)
     X, y = data.split_features_target(df)
     cat, num = data.get_feature_columns(X)
     X_train, X_test, y_train, y_test = train_test_split(

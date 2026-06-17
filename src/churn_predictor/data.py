@@ -32,7 +32,7 @@ def load_raw(csv_path: str) -> pd.DataFrame:
     return df
 
 
-def clean(df: pd.DataFrame) -> pd.DataFrame:
+def preprocess(df: pd.DataFrame) -> pd.DataFrame:
     """Apply the Telco-specific cleaning steps. Returns a cleaned copy.
 
     The Telco dataset has THREE specific traps. Handle each:
