@@ -19,8 +19,10 @@ Mention you considered it — interviewers probe imbalance handling.
 """
 
 from __future__ import annotations
+from xml.parsers.expat import model
 
 import joblib
+from pathlib import Path
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -86,9 +88,11 @@ def train(csv_path: str) -> tuple[Pipeline, float]:
     print(classification_report(y_test, pipe.predict(X_test)))
     return pipe, auc
 
+Path("models").mkdir(exist_ok=True)
 def save(pipe: Pipeline, path: str = MODEL_PATH) -> None:
     """Persist the fitted pipeline. TODO: joblib.dump(pipe, path)."""
-    joblib.dump(pipe, path)
+    
+    joblib.dump(pipe, "models/model.joblib")  # inside models/, which is mounted
 
 
 if __name__ == "__main__":
