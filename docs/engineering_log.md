@@ -1,11 +1,11 @@
-15-01-2026
+## 15-01-2026
 - Created a folder structure in the project folder. For this I created a template.py python file to create the desired folder automatically.
 - Downloaded the churn prediction file from Kaggle website into data folder.
 - Trying to install libraries but new environment.
 - Not able to create new environment with Conda.
 - Tyring with python way
 
-16-01-2026
+## 16-01-2026
 - Learnt about - 
  - why notebooks don't ship
     Good for prototyping, exploration and visualization. Notebooks are not a structured code, generally disorganized, no order. Also has hidden states, when run out of order. Variables do not get deleted, but misinterpreted in various cells under multiple uses. No versioning, no debugging, but lot of large data, dataframes, figures, metadata 
@@ -27,7 +27,7 @@
 - Finally running -
 > python -m churn_predictor.train
 
-17-06-2026
+## 17-06-2026
 - How to activate the environment
    .\capsproj\Scripts\Activate.ps1
    write this directly in powershell
@@ -55,3 +55,39 @@ tests/test_data.py::test_split_rows_add_up PASSED                               
 
 =============== 3 passed in 0.43s ======================================
 '''
+- I also finished learning how to run docker
+List of commands I followed after installing Docker Desktop
+- code -install-extension ms-vscode-remote.remote-wsl
+- docker --version 
+- docker run hello-world 
+> Here created one python file named hello.py, and one Dockerfile with 3 statements to run hello.py file
+- docker build -t hello-mlops .   
+- docker run hello-mlops
+docker ps -a          # all containers (running + stopped)
+docker images         # images you've built
+docker logs <id>      # what a container printed
+docker rm <id>        # delete a stopped container
+docker rmi hello-mlops  # delete the image
+docker rm <hello-mlops-id>    # remove the stopped container
+docker rm sleeper             # and the sleeper
+docker rmi hello-mlops        # remove the image
+docker images                 # confirm it's gone
+
+
+## 18-06-2026
+> Version Pinning
+practice to freeze software project dependencies (libraries, plugins or tools) to exact number versions
+it helps - 
+- to work on any machine
+- no automatic update
+- ensures reproducibility
+- example - 
+      - Unpinned - pandas >= 2.2.0
+      - Pinned -   pandas == 2.2.2
+- valid for Docker also -
+      - Unpinned - image: python:3.11
+      - Pinned -   image: python: 3.11.7
+
+> Slim Base Images
+stripped down versions of standard container OS(Debian/Ubuntu)
+
