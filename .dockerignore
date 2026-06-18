@@ -1,4 +1,5 @@
 .capsproj/__pycache__/
 .git/
 .pytest_cache/
+.ruff_cache/
 *.joblib

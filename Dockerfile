@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN pip install .
 
-CMD [ "python" "-m" "churn_predictor.train" ]    
+CMD [ "python", "-m", "churn_predictor.train" ]    

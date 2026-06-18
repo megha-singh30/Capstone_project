@@ -3,7 +3,7 @@
 - Downloaded the churn prediction file from Kaggle website into data folder.
 - Trying to install libraries but new environment.
 - Not able to create new environment with Conda.
-- Tyring with python way
+- Trying with python way
 
 ## 16-01-2026
 - Learnt about - 
@@ -27,12 +27,23 @@
 - Finally running -
 > python -m churn_predictor.train
 
+Tried these commands in order:
+> pip install -e .
+> python -c "import sys; print(sys.executable)"
+> pip -V
+> python -m pip install -e .
+> python -c "import churn_predictor; print(churn_predictor.__file__)"
+> python -c "from churn_predictor import data; print(data.__file__)"
+> python -m pip install -e . --config-settings editable_mode=compat
+
 ## 17-06-2026
 - How to activate the environment
-   .\capsproj\Scripts\Activate.ps1
+> .\capsproj\Scripts\Activate.ps1  
+> pip show churn_predictor
    write this directly in powershell
 - Learnt about Linting(ruff), type hints and pytest
 - Installed ruff and pytest
+> pip install pytest ruff  
 - run ruff 
 > ruff check src\
 - Created test_data.py file for pytest to run and check correctness of codes
@@ -55,6 +66,9 @@ tests/test_data.py::test_split_rows_add_up PASSED                               
 
 =============== 3 passed in 0.43s ======================================
 '''
+
+>  python -m churn_predictor.train  
+
 - I also finished learning how to run docker
 List of commands I followed after installing Docker Desktop
 - code -install-extension ms-vscode-remote.remote-wsl
