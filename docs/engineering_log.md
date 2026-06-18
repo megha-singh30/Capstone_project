@@ -61,8 +61,8 @@ List of commands I followed after installing Docker Desktop
 - docker --version 
 - docker run hello-world 
 > Here created one python file named hello.py, and one Dockerfile with 3 statements to run hello.py file
-- docker build -t hello-mlops .   
-- docker run hello-mlops
+- docker build -t hello-mlops .   --> builds an image
+- docker run hello-mlops -> container runs the image
 docker ps -a          # all containers (running + stopped)
 docker images         # images you've built
 docker logs <id>      # what a container printed
