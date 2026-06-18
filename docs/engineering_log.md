@@ -105,3 +105,11 @@ it helps -
 > Slim Base Images
 stripped down versions of standard container OS(Debian/Ubuntu)
 
+> pip freeze
+- This helped me to pin libraries in requirements.txt --> only those libraries that project files required
+- Added those files to requirements.txt
+
+> Dockerisation
+> docker build -t churn-trainer . 
+> docker run -v ${PWD}/models:/app/models churn-trainer 
+
