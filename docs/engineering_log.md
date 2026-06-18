@@ -40,3 +40,18 @@
 - Tested with 
 > pytest -v
 this pointed out with errors, which I corrected, and now says "All tests passed"
+Below is the output
+'''bash
+=========== test session starts ===================================
+platform win32 -- Python 3.11.5, pytest-9.1.0, pluggy-1.6.0 -- C:\Users\Megha Singh\Documents\Python\Projects\Capstone_project\.capsproj\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Megha Singh\Documents\Python\Projects\Capstone_project
+configfile: pyproject.toml
+collected 3 items                                                                                                    
+
+tests/test_data.py::test_load_returns_dataframe_with_churn PASSED                                              [ 33%]
+tests/test_data.py::test_preprocess_makes_totalcharges_numeric PASSED                                          [ 66%]
+tests/test_data.py::test_split_rows_add_up PASSED                                                              [100%]
+
+=============== 3 passed in 0.43s ======================================
+'''
