@@ -90,8 +90,7 @@ def train(csv_path: str) -> tuple[Pipeline, float]:
 
 Path("models").mkdir(exist_ok=True)
 def save(pipe: Pipeline, path: str = MODEL_PATH) -> None:
-    """Persist the fitted pipeline. TODO: joblib.dump(pipe, path)."""
-    
+    """Persist the fitted pipeline. TODO: joblib.dump(pipe, path)."""   
     joblib.dump(pipe, "models/model.joblib")  # inside models/, which is mounted
 
 

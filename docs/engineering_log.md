@@ -113,3 +113,10 @@ stripped down versions of standard container OS(Debian/Ubuntu)
 > docker build -t churn-trainer . 
 > docker run -v ${PWD}/models:/app/models churn-trainer 
 
+docker run itself does not make the joblib file. It does one thing: start a container from your image and execute its CMD — which is python -m churn_predictor.train. So docker run runs your training script.
+Then train.py (running inside the container) is what creates the file — its joblib.dump(model, "models/model.joblib") line writes the artifact to /app/models/model.joblib inside the container.
+The -v ${PWD}/models:/app/models part is the piece that makes it appear on your machine. Think of it as a shared window between two rooms:
+
+your host's models/ folder (your room)
+the container's /app/models/ folder (its room)
+
