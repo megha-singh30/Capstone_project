@@ -120,3 +120,23 @@ The -v ${PWD}/models:/app/models part is the piece that makes it appear on your 
 your host's models/ folder (your room)
 the container's /app/models/ folder (its room)
 
+## 19-06-2026
+> Understanding -- why APIs serve models, not scripts
+Scripts: Local execution. Manual setup. Resource intensive. Exposed code
+APIs: Cloud execution. Automated access. Managed resources. Protected code
+Scripts remain in codes, have to be executed and machine dependent.
+
+- APIs decouples ML logic from front-end app, 
+- python can interact with Java or other, 
+- IP protection
+- scalability, 
+- standaradization - inputs are uniform, output can be JSON
+- seamless version control
+
+> [ User Request ] -> [ Web/Mobile App ] -> [ API Endpoint ] -> [ Model Predicts ] -> [ JSON Response ]
+
+Python-based frameworks:
+1. Django
+2. FastAPI -- automatic input validation with Pydantic model types, has auto-generated documentation, direct Dict returns
+3. Flask
+
