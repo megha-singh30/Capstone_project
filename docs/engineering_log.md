@@ -139,3 +139,4 @@ Python-based frameworks:
 1. Django
 2. FastAPI -- automatic input validation with Pydantic model types, has auto-generated documentation, direct Dict returns
 3. Flask
+
