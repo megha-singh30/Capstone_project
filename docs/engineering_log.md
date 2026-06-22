@@ -140,3 +140,4 @@ Python-based frameworks:
 2. FastAPI -- automatic input validation with Pydantic model types, has auto-generated documentation, direct Dict returns
 3. Flask
 
+in the APi code, added customer model with all features datatype, then added predict function, which takes the input from the service, preprocess it using preprocessing done inside, the using reindex to make features in same order as training and filling them 0 if not provided and then running the model probability calculation with this processed code.
