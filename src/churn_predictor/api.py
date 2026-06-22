@@ -9,6 +9,7 @@ app = FastAPI()
 model = joblib.load(Path("models/model.joblib"))   # load ONCE at startup
 
 class Customer(BaseModel):
+    customerID : str
     gender: str
     SeniorCitizen: int
     Partner: str
