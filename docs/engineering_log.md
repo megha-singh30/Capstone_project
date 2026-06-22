@@ -143,3 +143,22 @@ Python-based frameworks:
 in the APi code, added customer model with all features datatype, then added predict function, which takes the input from the service, preprocess it using preprocessing done inside, the using reindex to make features in same order as training and filling them 0 if not provided and then running the model probability calculation with this processed code.
 
 a service stays alive and answers prediction requests on demand (your API). 
+
+## 22-06-2026
+Learning how to dockerize the API.
+"Dockerizing an API" means packaging an Application Programming Interface (API) alongside its source code, runtime, system tools, and dependencies into a single, isolated unit called a container image
+
+- The Dockerfile: A text file placed in the root of your API project containing a step-by-step blueprint of commands to assemble the container image
+- The Dockerfile: A text file placed in the root of your API project containing a step-by-step blueprint of commands to assemble the container image
+- The Container: The active, living instance of your image running as an isolated process on a host machine.
+- Eliminates "It Works on My Machine": Your API carries its exact framework and system version, neutralizing configuration conflicts. Can be run on any machine
+
+- Docker Compose is a tool used for defining and running multi-container Docker applications
+Instead of typing long, complex terminal commands to launch and connect your API, database, and caching systems one by one, you define your entire infrastructure in a single text file named docker-compose.yml. You can then launch your entire stack with one command: docker compose up
+________________________________________
+Created dockerfile.api and docker-compose.yaml file 
+docker compose up --build
+http://localhost:8000/health
+http://localhost:8000/docs
+docker compose ps
+docker compose down
