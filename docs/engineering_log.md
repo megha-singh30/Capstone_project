@@ -155,6 +155,10 @@ Learning how to dockerize the API.
 
 - Docker Compose is a tool used for defining and running multi-container Docker applications
 Instead of typing long, complex terminal commands to launch and connect your API, database, and caching systems one by one, you define your entire infrastructure in a single text file named docker-compose.yml. You can then launch your entire stack with one command: docker compose up
+
+- Every container has its own isolated localhost that points to itself. So if your API tried to reach the database at localhost:5432, it'd look for Postgres inside the API container — where nothing's running — and fail. The database is in a different container.
+Compose solves this by putting both containers on a shared private network where each container is reachable by its service name. Your compose file names the database service db, so from inside the API container, the hostname db resolves to the Postgres container. That's why the connection string is @db:5432 — db is the address of the other container on that network.
+One-line version to lock in: localhost inside a container = that container itself; to reach a different container, you use its service name, which compose's network resolves for you.
 ________________________________________
 Created dockerfile.api and docker-compose.yaml file 
 docker compose up --build
