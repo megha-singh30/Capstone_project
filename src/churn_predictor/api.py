@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import joblib, pandas as pd
 from pathlib import Path
 from churn_predictor.data import preprocess 
@@ -14,7 +14,7 @@ class Customer(BaseModel):
     SeniorCitizen: int
     Partner: str
     Dependents: str
-    tenure: int
+    tenure: int = Field(ge=0, le=100)
     PhoneService: str
     MultipleLines: str
     InternetService: str
@@ -24,11 +24,11 @@ class Customer(BaseModel):
     TechSupport: str
     StreamingTV: str
     StreamingMovies: str
-    Contract: str
+    Contract: str =Field(pattern="^(Month-to-month|One year|Two year)$")
     PaperlessBilling: str
     PaymentMethod: str
-    MonthlyCharges: float
-    TotalCharges: float
+    MonthlyCharges: float = Field(ge=0)
+    TotalCharges: float = Field(ge=0)
 
 
 @app.get("/health")
