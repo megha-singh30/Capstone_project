@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 import joblib, pandas as pd
 from pathlib import Path
@@ -37,10 +37,13 @@ def health():
 
 @app.post("/predict")
 def predict(c: Customer):
-    df = pd.DataFrame([c.dict()])
-    df = preprocess(df) 
-    df = df.reindex(columns=model.feature_names_in_, fill_value=0)  # force exact column match
-    proba = model.predict_proba(df)[0][1]
-    return {"churn_probability": round(float(proba), 4)} # if your pipeline has a fit_transform, apply it here
+    try:
+        df = pd.DataFrame([c.dict()])
+        df = preprocess(df) 
+        df = df.reindex(columns=model.feature_names_in_, fill_value=0)  # force exact column match
+        proba = model.predict_proba(df)[0][1]
+        return {"churn_probability": round(float(proba), 4)} # if your pipeline has a fit_transform, apply it here
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     
  
