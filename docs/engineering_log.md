@@ -1,11 +1,11 @@
-## 15-01-2026
+## 15-01-2026 -- DAY-1
 - Created a folder structure in the project folder. For this I created a template.py python file to create the desired folder automatically.
 - Downloaded the churn prediction file from Kaggle website into data folder.
 - Trying to install libraries but new environment.
 - Not able to create new environment with Conda.
 - Trying with python way
 
-## 16-01-2026
+## 16-01-2026 -- DAY-2
 - Learnt about - 
  - why notebooks don't ship
     Good for prototyping, exploration and visualization. Notebooks are not a structured code, generally disorganized, no order. Also has hidden states, when run out of order. Variables do not get deleted, but misinterpreted in various cells under multiple uses. No versioning, no debugging, but lot of large data, dataframes, figures, metadata 
@@ -36,7 +36,7 @@ Tried these commands in order:
 > python -c "from churn_predictor import data; print(data.__file__)"
 > python -m pip install -e . --config-settings editable_mode=compat
 
-## 17-06-2026
+## 17-06-2026 -- DAY-3
 - How to activate the environment
 > .\capsproj\Scripts\Activate.ps1  
 > pip show churn_predictor
@@ -88,7 +88,7 @@ docker rmi hello-mlops        # remove the image
 docker images                 # confirm it's gone
 
 
-## 18-06-2026
+## 18-06-2026 -- DAY-4
 > Version Pinning
 practice to freeze software project dependencies (libraries, plugins or tools) to exact number versions
 it helps - 
@@ -120,7 +120,7 @@ The -v ${PWD}/models:/app/models part is the piece that makes it appear on your 
 your host's models/ folder (your room)
 the container's /app/models/ folder (its room)
 
-## 19-06-2026
+## 19-06-2026 -- DAY-5
 > Understanding -- why APIs serve models, not scripts
 Scripts: Local execution. Manual setup. Resource intensive. Exposed code
 APIs: Cloud execution. Automated access. Managed resources. Protected code
@@ -144,7 +144,7 @@ in the APi code, added customer model with all features datatype, then added pre
 
 a service stays alive and answers prediction requests on demand (your API). 
 
-## 22-06-2026
+## 22-06-2026 -- DAY-6
 Learning how to dockerize the API.
 "Dockerizing an API" means packaging an Application Programming Interface (API) alongside its source code, runtime, system tools, and dependencies into a single, isolated unit called a container image
 
@@ -166,3 +166,11 @@ http://localhost:8000/health
 http://localhost:8000/docs
 docker compose ps
 docker compose down
+
+# Review Week-1
+- Notebook code → installable src/churn_predictor package. Fought ModuleNotFoundError, editable installs, the python -m quirk, a Windows \t path bug.
+- ruff + pytest; 3 real tests that caught actual bugs (path resolution, features-vs-train/test confusion).
+- Docker fundamentals — image vs container, layers, lifecycle. Install + hello-world.
+- Dockerized training; empty-requirements trap, transitive deps, CMD exec-form, volume mount to persist the model artifact.
+- FastAPI /health + /predict; solved training/serving skew via reindex to feature_names_in_. Verified with contrasting profiles (0.03 vs 0.4).
+- Multi-container compose stack (API + Postgres); service-name networking (db not localhost), 0.0.0.0 host binding.
