@@ -174,3 +174,76 @@ docker compose down
 - Dockerized training; empty-requirements trap, transitive deps, CMD exec-form, volume mount to persist the model artifact.
 - FastAPI /health + /predict; solved training/serving skew via reindex to feature_names_in_. Verified with contrasting profiles (0.03 vs 0.4).
 - Multi-container compose stack (API + Postgres); service-name networking (db not localhost), 0.0.0.0 host binding.
+
+Also, we have used reindex --> which was a temporary solution.
+Basically, it is  manual column reconciliation. 
+> What TO DO DIFFERENTLY OR RIGHT SOLUTION -->  collapsing preprocessing and model into one fitted Pipeline
+
+# 23-06-2026 – Day – 7
+First task: Recap of Day1-6.
+
+## What I'd do differently
+
+**Training/serving consistency — I patched it instead of designing it right.**
+
+What I did: handled the column-mismatch between training and serving by manually
+running preprocess() in the API, then forcing columns to match the model with
+reindex(columns=feature_names_in_, fill_value=0).
+
+Why it's flawed: that's two separate copies of "what columns should exist" — one in
+the model, one maintained by hand in the API. They can silently drift. Worse, an
+unseen category (a typo, a new contract type) gets quietly zero-filled and the model
+returns a confident wrong answer with no error. That's a latent training/serving
+skew bug.
+
+What's better: bundle preprocessing + model into one sklearn Pipeline, fit once,
+save as a single artifact. The encoder remembers its categories; serving just calls
+pipe.predict_proba(raw_input). Preprocessing and model can't drift apart because
+they're one object. Refactor planned for Week 2.
+
+Second task: Postmortem of some short tricks or errors faced: like the use of reindex instead of using its own pipeline; which needs to be fixed later on.
+
+Following tasks are performed:
+-	Pydantic (task 1) guards the input — malformed data never reaches your code. Returns 422. 
+-	try/except (task 2) guards the processing — if valid-but-problematic input breaks something downstream, it fails gracefully. Returns 500.
+To test this, I renamed joblib.load(model.joblib)  missing_model.joblib
+a missing/corrupt model file crashes the whole service at startup with an ugly trace. Production-grade handling would catch that too and fail with a clear message ("model artifact not found at path X"). That's a genuine "what I'd do differently" — your error handling covers the request path but not the startup path. Note it; don't fix it today (it's polish, not Day 7 scope).
+
+-	Now creating a multi-stage Dockerfilel. It consists of –
+o	Stage 1 - Main instructions to set up slim base of python and install requirements and run CMD
+o	Stage- 2 - Second all running commands
+o	Both at same place Dockerfile.api
+	FROM python:3.11-slim AS builder
+-	Start stage one, call it builder. This is a throwaway environment — its only job is to install dependencies. AS builder names it so the next stage can reach back into it.
+	WORKDIR /app
+-	Set the working directory inside the image to /app (creates it, cds into it). All following commands run from here.
+	COPY requirements.txt .
+	RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+-	Copy in just the requirements file, then install all deps — but --prefix=/install puts them in an isolated /install folder instead of the system location. This bundles every installed package into one tidy directory we can lift out wholesale. --no-cache-dir tells pip not to keep its download cache (we don't need it in the final image).
+	FROM python:3.11-slim
+-	The key line. A second FROM starts stage two — a brand-new, clean image from scratch. Everything from the builder stage is discarded except what we explicitly copy over next. This fresh image is what actually ships.
+	WORKDIR /app
+	COPY --from=builder /install /usr/local
+-	--from=builder reaches into the first stage and copies the /install folder (all your deps) into this clean image's /usr/local (where Python looks for packages). So the runtime image gets the installed libraries but none of the build-time mess.
+	COPY . .
+	RUN pip install --no-deps .
+-	Copy your project code in, then install your package — --no-deps means "don't re-fetch dependencies, they're already here from the builder stage." Just registers your churn_predictor package.
+	CMD ["uvicorn", "churn_predictor.api:app", "--host", "0.0.0.0", "--port", "8000"]
+-	The default command when a container starts: launch the API server. Exec form (JSON array) so signals reach uvicorn cleanly
+	MAIN CONCLUSION
+Refactored API to multi-stage build. Image stayed ~293MB — no reduction, because dependencies are prebuilt wheels with no build-time tooling to strip. Kept the pattern anyway: it's the correct structure for when builds add compiled dependencies, and it cleanly separates build from runtime.
+	If someone asks "did multi-stage help?" your answer is I cut my image 60%
+
+	docker compose up –build
+	docker compose up — reads your docker-compose.yml and starts the whole stack defined in it: your api container and your db (Postgres) container, wired together on their shared network. One command, both services. (Plain up would reuse existing images if they're already built.)
+	--build — forces Docker to rebuild your images from the Dockerfiles first, before starting. Without it, compose uses whatever image it built last time — so if you changed your code or your Dockerfile.api (like the multi-stage edit you just made), those changes would be ignored and you'd run the stale old image. --build says "rebuild first, then run," guaranteeing you're running your latest code.
+	So docker compose up --build = "rebuild my images with the current code, then start the full stack."
+The practical rule:
+•	Changed your code or a Dockerfile? → docker compose up --build (rebuild, then run)
+•	Just restarting, nothing changed? → docker compose up (faster, reuses images)
+
+	docker compose logs -f
+	docker compose down
+
+
+

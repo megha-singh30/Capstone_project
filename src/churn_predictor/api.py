@@ -1,5 +1,5 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
 import joblib, pandas as pd
 from pathlib import Path
 from churn_predictor.data import preprocess 
@@ -14,7 +14,7 @@ class Customer(BaseModel):
     SeniorCitizen: int
     Partner: str
     Dependents: str
-    tenure: int
+    tenure: int = Field(ge=0, le=100)
     PhoneService: str
     MultipleLines: str
     InternetService: str
@@ -24,11 +24,11 @@ class Customer(BaseModel):
     TechSupport: str
     StreamingTV: str
     StreamingMovies: str
-    Contract: str
+    Contract: str =Field(pattern="^(Month-to-month|One year|Two year)$")
     PaperlessBilling: str
     PaymentMethod: str
-    MonthlyCharges: float
-    TotalCharges: float
+    MonthlyCharges: float = Field(ge=0)
+    TotalCharges: float = Field(ge=0)
 
 
 @app.get("/health")
@@ -37,10 +37,13 @@ def health():
 
 @app.post("/predict")
 def predict(c: Customer):
-    df = pd.DataFrame([c.dict()])
-    df = preprocess(df) 
-    df = df.reindex(columns=model.feature_names_in_, fill_value=0)  # force exact column match
-    proba = model.predict_proba(df)[0][1]
-    return {"churn_probability": round(float(proba), 4)} # if your pipeline has a fit_transform, apply it here
+    try:
+        df = pd.DataFrame([c.dict()])
+        df = preprocess(df) 
+        df = df.reindex(columns=model.feature_names_in_, fill_value=0)  # force exact column match
+        proba = model.predict_proba(df)[0][1]
+        return {"churn_probability": round(float(proba), 4)} # if your pipeline has a fit_transform, apply it here
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     
  
