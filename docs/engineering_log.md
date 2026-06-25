@@ -245,5 +245,11 @@ The practical rule:
 	docker compose logs -f
 	docker compose down
 
+# 24-06-2026
+- Pipeline refactor will be dealt today. So that this line suits:
+"I refactored to a Pipeline before adding experiment tracking, so my tracked runs reflected the real architecture
+
+- "Pydantic v2 — .dict() → .model_dump().--> as dict() was deprecated in Pydantic v2.
+pipeline already existed in training, the API was the actual skew source, you deleted preprocess+reindex, fixed .dict()→.model_dump(), and the prediction shifted because scaling is now correct. And fix the earlier entry that called this "build a pipeline."
 
 
