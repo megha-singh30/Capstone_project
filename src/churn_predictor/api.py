@@ -6,7 +6,7 @@ from churn_predictor.data import preprocess
 
 
 app = FastAPI()
-model = joblib.load(Path("models/model.joblib"))   # load ONCE at startup
+pipeline = joblib.load(Path("models/model.joblib"))   # load ONCE at startup
 
 class Customer(BaseModel):
     customerID : str
@@ -38,10 +38,10 @@ def health():
 @app.post("/predict")
 def predict(c: Customer):
     try:
-        df = pd.DataFrame([c.dict()])
-        df = preprocess(df) 
-        df = df.reindex(columns=model.feature_names_in_, fill_value=0)  # force exact column match
-        proba = model.predict_proba(df)[0][1]
+        df = pd.DataFrame([c.model_dump()])
+        # df = preprocess(df) 
+        # df = df.reindex(columns=pipeline.feature_names_in_, fill_value=0)  # force exact column match
+        proba = pipeline.predict_proba(df)[0][1]
         return {"churn_probability": round(float(proba), 4)} # if your pipeline has a fit_transform, apply it here
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
