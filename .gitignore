@@ -224,3 +224,5 @@ models/
 mlops-tracker.xlsx
 mlops-tracker-notion.csv
 model.joblib
+
+mlruns/
