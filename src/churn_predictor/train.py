@@ -59,6 +59,7 @@ def build_pipeline(categorical_cols: list[str], numeric_cols: list[str]) -> Pipe
 
 
 import mlflow
+mlflow.set_tracking_uri("sqlite:///mlflow.db")
 
 def train(csv_path):
     df = data.load_raw(csv_path)

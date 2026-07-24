@@ -226,3 +226,4 @@ mlops-tracker-notion.csv
 model.joblib
 
 mlruns/
+mlflow.db
