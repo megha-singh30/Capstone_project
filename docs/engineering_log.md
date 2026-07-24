@@ -282,4 +282,9 @@ Steps done today:
 
 
 What do we achieve using Tracking via MLflow?
-- Before, training just printed an AUC and overwrote the model — no history. Now every run logs to MLflow: the model type and hyperparameters as params, AUC as a metric, and the fitted pipeline as an artifact with its environment. So I can compare runs side by side and reproduce any of them. Versioning and promotion come next, through the model registry.
+- Before, training just printed an AUC and overwrote the model — no history. Now every run logs to MLflow: the model type and hyperparameters as params, AUC as a metric, and the fitted pipeline as an artifact with its environment. So I can compare runs side by side and reproduce any of them. Versioning and promotion come next, through the model registry
+- Tracking (what is done today )records runs; the registry assigns version numbers and stages.
+tracking = recording runs; registry = versioning and promoting models
+- "why not just print the number?" — because a printed metric is gone on the next run, and you can't reproduce or compare.
+
+
