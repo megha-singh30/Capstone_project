@@ -29,17 +29,23 @@
 
 Tried these commands in order:
 > pip install -e .
+
 > python -c "import sys; print(sys.executable)"
+
 > pip -V
+
 > python -m pip install -e .
+
 > python -c "import churn_predictor; print(churn_predictor.__file__)"
+
 > python -c "from churn_predictor import data; print(data.__file__)"
+
 > python -m pip install -e . --config-settings editable_mode=compat
 
 ## 17-06-2026 -- DAY-3
 - How to activate the environment
 > .\capsproj\Scripts\Activate.ps1  
-> pip show churn_predictor
+pip show churn_predictor
    write this directly in powershell
 - Learnt about Linting(ruff), type hints and pytest
 - Installed ruff and pytest
@@ -50,19 +56,19 @@ Tried these commands in order:
    - Added functions to test each of 3 functions in data.py, these functions check the output length, type etc to make sure the output returned by those functions are correct.
 - Tested with 
 > pytest -v
-this pointed out with errors, which I corrected, and now says "All tests passed"
+ - this pointed out with errors, which I corrected, and now says "All tests passed"
 Below is the output
 '''bash
 =========== test session starts ===================================
-platform win32 -- Python 3.11.5, pytest-9.1.0, pluggy-1.6.0 -- C:\Users\Megha Singh\Documents\Python\Projects\Capstone_project\.capsproj\Scripts\python.exe
-cachedir: .pytest_cache
-rootdir: C:\Users\Megha Singh\Documents\Python\Projects\Capstone_project
-configfile: pyproject.toml
-collected 3 items                                                                                                    
+> platform win32 -- Python 3.11.5, pytest-9.1.0, pluggy-1.6.0 -- C:\Users\Megha Singh\Documents\Python\Projects\Capstone_project\.capsproj\Scripts\python.exe
+> cachedir: .pytest_cache
+> rootdir: C:\Users\Megha Singh\Documents\Python\Projects\Capstone_project
+> configfile: pyproject.toml
+> collected 3 items                                                                                                    
 
-tests/test_data.py::test_load_returns_dataframe_with_churn PASSED                                              [ 33%]
-tests/test_data.py::test_preprocess_makes_totalcharges_numeric PASSED                                          [ 66%]
-tests/test_data.py::test_split_rows_add_up PASSED                                                              [100%]
+- tests/test_data.py::test_load_returns_dataframe_with_churn PASSED                                              [ 33%]
+- tests/test_data.py::test_preprocess_makes_totalcharges_numeric PASSED                                          [ 66%]
+- tests/test_data.py::test_split_rows_add_up PASSED                                                              [100%]
 
 =============== 3 passed in 0.43s ======================================
 '''
@@ -149,7 +155,6 @@ Learning how to dockerize the API.
 "Dockerizing an API" means packaging an Application Programming Interface (API) alongside its source code, runtime, system tools, and dependencies into a single, isolated unit called a container image
 
 - The Dockerfile: A text file placed in the root of your API project containing a step-by-step blueprint of commands to assemble the container image
-- The Dockerfile: A text file placed in the root of your API project containing a step-by-step blueprint of commands to assemble the container image
 - The Container: The active, living instance of your image running as an isolated process on a host machine.
 - Eliminates "It Works on My Machine": Your API carries its exact framework and system version, neutralizing configuration conflicts. Can be run on any machine
 
@@ -186,9 +191,7 @@ First task: Recap of Day1-6.
 
 **Training/serving consistency — I patched it instead of designing it right.**
 
-What I did: handled the column-mismatch between training and serving by manually
-running preprocess() in the API, then forcing columns to match the model with
-reindex(columns=feature_names_in_, fill_value=0).
+What I did: handled the column-mismatch between training and serving by manually running preprocess() in the API, then forcing columns to match the model with reindex(columns=feature_names_in_, fill_value=0).
 
 Why it's flawed: that's two separate copies of "what columns should exist" — one in
 the model, one maintained by hand in the API. They can silently drift. Worse, an
@@ -252,4 +255,31 @@ The practical rule:
 - "Pydantic v2 — .dict() → .model_dump().--> as dict() was deprecated in Pydantic v2.
 pipeline already existed in training, the API was the actual skew source, you deleted preprocess+reindex, fixed .dict()→.model_dump(), and the prediction shifted because scaling is now correct. And fix the earlier entry that called this "build a pipeline."
 
+# 23-07-2026
+Steps done today:
+1. Installed mlflow
+2.	Add mlruns/ and mlflow.db to .gitignore
+3.	Put it in requirements.txt
+4. Use mlflow ui
+5. MLflow's file store is deprecated in current versions and raises an exception
+6. Added mlflow.set_tracking_uri("sqlite:///mlflow.db") to remove the block
 
+
+# 24-07-2026
+- What steps were done today:
+1. Model tracking added via MLflow: MLflow.start_runs() added for every model training instance. This includes adding AUC for a metric via mlflow.log_metric("auc", auc)
+2. Added to track hyperparameters through mlflow.log_param("model", name) and model through mlflow.sklearn.log_model(pipe, name="churn_pipeline")
+3. Ran the code via python -m churn_predictor.train
+4. Also added -
+  - mlflow.set_tracking_uri("sqlite:///mlflow.db") --> For setting the database
+  - mlflow.set_experiment("churn-prediction")  --> for naming the experiment (run)
+5. Lastly ran the ui to load display on http://127.0.0.1:5000/
+   mlflow ui --backend-store-uri sqlite:///mlflow.db
+6. On the screen, 'churn_prediction' name can be seen inside which the metric, model and params are stored.
+7. In order to different runs --> saving different models or params or metrics, we added 5-run test with 5-different models every run-
+8. Running this using step 3 and 4. 5 runs are visible under 'churn_prediction' and each run save its model, params and auc score.
+9. By selecting all runs, we can also compare the performance of each run.
+
+
+What do we achieve using Tracking via MLflow?
+- Before, training just printed an AUC and overwrote the model — no history. Now every run logs to MLflow: the model type and hyperparameters as params, AUC as a metric, and the fitted pipeline as an artifact with its environment. So I can compare runs side by side and reproduce any of them. Versioning and promotion come next, through the model registry.

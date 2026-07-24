@@ -26,6 +26,7 @@ import mlflow
 from pathlib import Path
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -36,29 +37,18 @@ from churn_predictor import data
 MODEL_PATH = "model.joblib"
 
 
-def build_pipeline(categorical_cols: list[str], numeric_cols: list[str]) -> Pipeline:
-    """Build the preprocessing + model pipeline.
-
-    TODO:
-      - preprocessor = ColumnTransformer([
-            ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
-            ("num", StandardScaler(), numeric_cols),
-        ])
-        (handle_unknown="ignore" matters: at serve time a category you never
-         saw in training shouldn't crash the request.)
-      - model = LogisticRegression(max_iter=1000, class_weight="balanced")
-        # swap for your tree model once the baseline works
-      - return Pipeline([("prep", preprocessor), ("model", model)])
-    """
+def build_pipeline(categorical_cols, numeric_cols, model):   # ← model is now an argument
     preprocessor = ColumnTransformer([
         ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
-        ("num", StandardScaler(), numeric_cols),    
+        ("num", StandardScaler(), numeric_cols),
     ])
-    model = LogisticRegression(max_iter=1000, class_weight="balanced")
-    return Pipeline([("prep", preprocessor), ("model", model)]) 
+    return Pipeline([("prep", preprocessor), ("model", model)])   
 
 
 import mlflow
+import mlflow.sklearn
+mlflow.set_tracking_uri("sqlite:///mlflow.db")
+mlflow.set_experiment("churn-prediction")   # ← creates it if missing, uses it if not
 
 def train(csv_path):
     df = data.load_raw(csv_path)
@@ -68,12 +58,35 @@ def train(csv_path):
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, stratify=y, random_state=42)
 
-    with mlflow.start_run():
-        pipe = build_pipeline(cat, num)
-        pipe.fit(X_train, y_train)
-        auc = roc_auc_score(y_test, pipe.predict_proba(X_test)[:, 1])
-        mlflow.log_metric("auc", auc)          # ← the one new line that matters
-        print(classification_report(y_test, pipe.predict(X_test)))
+    # the 5 experiments — each a (name, model) pair
+    experiments = {
+        "logreg_balanced":   LogisticRegression(max_iter=1000, class_weight="balanced"),
+        "logreg_C0.1":       LogisticRegression(max_iter=1000, C=0.1),
+        "random_forest":     RandomForestClassifier(n_estimators=100, random_state=42),
+        "rf_deep":           RandomForestClassifier(n_estimators=200, max_depth=10, random_state=42),
+        "gradient_boosting": GradientBoostingClassifier(random_state=42),
+    }
+
+    for name, model in experiments.items():
+        with mlflow.start_run(run_name=name):
+            pipe = build_pipeline(cat, num, model)
+            pipe.fit(X_train, y_train)
+            auc = roc_auc_score(y_test, pipe.predict_proba(X_test)[:, 1])
+            mlflow.log_param("model", name)
+            mlflow.log_metric("auc", auc)
+            mlflow.sklearn.log_model(pipe, name="churn_pipeline")
+            print(f"{name}: AUC={auc:.4f}")
+
+    # with mlflow.start_run():
+    #     model = LogisticRegression(max_iter=1000, class_weight="balanced")
+    #     pipe = build_pipeline(cat, num, model)
+    #     pipe.fit(X_train, y_train)
+    #     auc = roc_auc_score(y_test, pipe.predict_proba(X_test)[:, 1])
+
+    #     mlflow.log_param("model", "LogisticRegression")   # inputs you chose
+    #     mlflow.log_metric("auc", auc)                      # outputs you got
+    #     mlflow.sklearn.log_model(pipe, name="churn_pipeline")  # the model itself
+    #     print(classification_report(y_test, pipe.predict(X_test)))
     return pipe, auc
 
 
