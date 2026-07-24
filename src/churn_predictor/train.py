@@ -59,7 +59,9 @@ def build_pipeline(categorical_cols: list[str], numeric_cols: list[str]) -> Pipe
 
 
 import mlflow
+import mlflow.sklearn
 mlflow.set_tracking_uri("sqlite:///mlflow.db")
+mlflow.set_experiment("churn-prediction")   # ← creates it if missing, uses it if not
 
 def train(csv_path):
     df = data.load_raw(csv_path)
@@ -73,7 +75,10 @@ def train(csv_path):
         pipe = build_pipeline(cat, num)
         pipe.fit(X_train, y_train)
         auc = roc_auc_score(y_test, pipe.predict_proba(X_test)[:, 1])
-        mlflow.log_metric("auc", auc)          # ← the one new line that matters
+
+        mlflow.log_param("model", "LogisticRegression")   # inputs you chose
+        mlflow.log_metric("auc", auc)                      # outputs you got
+        mlflow.sklearn.log_model(pipe, name="churn_pipeline")  # the model itself
         print(classification_report(y_test, pipe.predict(X_test)))
     return pipe, auc
 
