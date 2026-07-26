@@ -266,6 +266,7 @@ Steps done today:
 
 
 # 24-07-2026
+## Working on Model Tracking with MLFlow
 - What steps were done today:
 1. Model tracking added via MLflow: MLflow.start_runs() added for every model training instance. This includes adding AUC for a metric via mlflow.log_metric("auc", auc)
 2. Added to track hyperparameters through mlflow.log_param("model", name) and model through mlflow.sklearn.log_model(pipe, name="churn_pipeline")
@@ -287,4 +288,20 @@ What do we achieve using Tracking via MLflow?
 tracking = recording runs; registry = versioning and promoting models
 - "why not just print the number?" — because a printed metric is gone on the next run, and you can't reproduce or compare.
 
+# 26-07-2026
+*What is model versioning and model rollback*  
+## Model Versioning   
+- Model versioning is the systematic tracking of machine learning iterations, including code, data, and hyperparameters.  
+- A complete versioning involves following:  
+  1. Model artifacts: Exact binary weights and architecture files.  
+  2. Data lineage: The specific dataset version used to train or fine-tune the model.  
+  3. Hyperparameters & Configs: Settings like learning rate, temperature, and prompt templates.  
+  4. Evaluation metrics: Performance scores on test data before release.
 
+## Model Rollback
+-  Rollback is the emergency process of reverting a live production system back to a previous stable model version when the new release fails.  
+  1. Triggers: Automated alerts or failed gate checks on canary traffic.  
+  2. Execution: Re-promoting a pre-warmed previous version in the model registry to handle live traffic.  
+  3. State Safety: Ensuring the rolled-back version fits the current data schemas and feature stores without causing downstream crashes.  
+
+  

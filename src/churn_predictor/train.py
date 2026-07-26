@@ -73,7 +73,7 @@ def train(csv_path):
             pipe.fit(X_train, y_train)
             auc = roc_auc_score(y_test, pipe.predict_proba(X_test)[:, 1])
             mlflow.log_param("model", name)
-            mlflow.log_metric("auc", auc)
+                
             mlflow.sklearn.log_model(pipe, name="churn_pipeline")
             print(f"{name}: AUC={auc:.4f}")
 
